@@ -21,8 +21,6 @@ Date			: 2017/09/26
 from __future__ import print_function
 from builtins import str
 from builtins import object
-import time
-from DTNRMLibs.DBBackend import dbinterface
 from DTNRMLibs.MainUtilities import getConfig
 from DTNRMLibs.MainUtilities import getVal
 from DTNRMLibs.MainUtilities import contentDB

@@ -4,7 +4,7 @@ import sys
 from DTNRMLibs.MainUtilities import getVal
 from DTNRMLibs.MainUtilities import evaldict
 from SiteFE.PolicyService.stateMachine import StateMachine
-from DTNRMLibs.MainUtilities import getConfig, getLogger, getStreamLogger
+from DTNRMLibs.MainUtilities import getConfig, getStreamLogger
 from DTNRMLibs.FECalls import getDBConn
 
 #LOGGER = getStreamLogger()

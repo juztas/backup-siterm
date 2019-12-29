@@ -20,7 +20,7 @@ Email 			: justas.balcas (at) cern.ch
 Date			: 2017/09/26
 """
 from __future__ import print_function
-from DTNRMLibs.MainUtilities import getConfig, getLogger, getStreamLogger
+from DTNRMLibs.MainUtilities import getConfig, getStreamLogger
 from DTNRMLibs.MainUtilities import evaldict
 
 def getNodeDictVlans(nodesInfo, hostname, switchName):

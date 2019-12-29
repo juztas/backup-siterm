@@ -117,7 +117,7 @@ class PolicyService(object):
                     temptime = int(time.mktime(parser.parse(str(tout[0])).timetuple()))
                     if time.daylight:
                         temptime -= 3600
-                except:
+                except ValueError:
                     continue
                 times[timev] = temptime
             if len(list(times.keys())) == 2:
@@ -156,13 +156,11 @@ class PolicyService(object):
                 msg = 'Connection ID was not received. Something is wrong...'
                 self.logger.info(msg)
                 return {}
-                continue
             if len(out) > 1:
                 self.logger.info(out)
                 msg = 'Received multiple connection IDs. Something is wrong...'
                 self.logger.info(msg)
                 return {}
-                continue
             print(out)
             outall['connectionID'] = str(out[0])
             outall['hosts'][hostname]['routes'] = []

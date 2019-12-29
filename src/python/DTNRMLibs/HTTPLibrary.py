@@ -92,7 +92,7 @@ def encodeRequest(configreq, listParams=None):
     return str(encoded)
 
 
-class Requests(dict):
+class Requests(object):
     """Make any type of HTTP(s) request"""
     def __init__(self, url='http://localhost', inputdict=None, config=None):
         if not inputdict:

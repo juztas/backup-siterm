@@ -88,7 +88,7 @@ class ResponseHeader(object):
             try:
                 key, val = row.split(':', 1)
                 self.header[key.strip()] = val.strip()
-            except:
+            except ValueError:
                 pass
 
 class RequestHandler(object):
@@ -290,7 +290,7 @@ class RequestHandler(object):
                     if ret != pycurl.E_CALL_MULTI_PERFORM:
                         break
             dummyNumq, response, dummyErr = multi.info_read()
-            for dummyCobj in response:
+            for _dummyCobj in response:
                 data = json.loads(bbuf.getvalue())
                 if isinstance(data, dict):
                     data.update(params)
@@ -307,7 +307,7 @@ class RequestHandler(object):
                 bbuf.flush()
                 hbuf.flush()
 
-HTTP_PAT = re.compile("(https|http)://[-A-Za-z0-9_+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]")
+HTTP_PAT = re.compile("(https|http)://[-A-Za-z0-9_+&@#/%?=~|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]")
 
 def validate_url(url):
     "Validate URL"

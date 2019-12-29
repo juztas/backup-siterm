@@ -152,7 +152,6 @@ class Daemon(object):
             print('Application info: PID %s' % pid)
             pidf.close()
         except IOError:
-            pid = None
             print('Is application running?')
             sys.exit(1)
 

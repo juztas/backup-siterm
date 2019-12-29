@@ -31,20 +31,14 @@ class MyDaemon(Daemon):
         provisioner = prsS.ProvisioningService(config=CONFIG, switchConfig=SWITCH_CONFIG, logger=LOGGER, args=None)
         looker = LS.LookUpService(config=CONFIG, switchConfig=SWITCH_CONFIG, logger=LOGGER, args=None)
         while True:
-            hadException = False
-            if hadException:
-                LOGGER.info('There was an exception in previous run. Sleep 20s.')
-                time.sleep(20)
-            else:
-                LOGGER.info('There was no exception in previous run. Sleep 10s before next run')
-                time.sleep(10)
+            time.sleep(10)
             for action in [["ProvisionService", provisioner],
-                           ["LookUpService", looker]]:
+                           ["LookUpService", looker],
+                           ["PolicyService", policer]]:
                 try:
                     LOGGER.info('Starting %s' % action[0])
                     action[1].startwork()
-                except:
-                    hadException = True
+                except IOError:
                     LOGGER.info('There was uncaught exception')
                     excType, excValue = sys.exc_info()[:2]
                     LOGGER.critical("Error details. ErrorType: %s, ErrMsg: %s" % (str(excType.__name__), excValue))

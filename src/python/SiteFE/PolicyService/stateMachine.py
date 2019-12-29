@@ -20,7 +20,6 @@ Date			: 2018/11/26
 """
 from builtins import str
 from builtins import object
-import time
 from DTNRMLibs.MainUtilities import evaldict
 from DTNRMLibs.MainUtilities import getUTCnow
 
@@ -38,7 +37,7 @@ def timeendcheck(delta, logger):
                 logger.info('Time did not passed yet.')
         else:
             logger.info('There is no timeend defined inside the Parsed Delta')
-    except:
+    except (ValueError, KeyError):
         logger.info('This delta had an error checking endtime. Leaving state as it is.')
     return False
 
@@ -142,7 +141,7 @@ class StateMachine(object):
                     else:
                         self.logger.info('This delta %s do not have timestart. Setting state to activating' % delta['uid'])
                         self._stateChangerDelta(dbObj, 'activating', **delta)
-                except:
+                except (ValueError, KeyError):
                     self.logger.info('This delta %s had an error checking starttime. Leaving state as it is.' % delta['uid'])
             else:
                 self.logger.info('This delta %s is in committed. Setting state to activating.' % delta['uid'])

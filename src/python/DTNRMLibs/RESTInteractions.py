@@ -72,7 +72,7 @@ def get_json_post_form(environ):
     request_body = environ['wsgi.input'].read(request_body_size)
     try:
         params = json.loads(request_body)
-    except:
+    except TypeError:
         print('Reached except in data load')
         params = evaldict(request_body)
         if not isinstance(params, dict):

@@ -27,15 +27,9 @@ import sys
 import platform
 import configparser
 
-import platform
-import sys
-
 def linuxDistr():
     """ Return linux distribution name. Otherwise Unknown """
-    try:
-        return platform.linux_distribution()
-    except:
-        return "Unknown"
+    return platform.linux_distribution()
 
 def printInfo(logger=None):
     """ Print information about sytem before start setup """
@@ -49,7 +43,7 @@ def printInfo(logger=None):
     print("Platform: %s" % platform.platform())
     print('Uname: %s' % platform.uname())
     print('Version: %s' % platform.version())
-    print('Mac version: %s' % platform.mac_ver())
+    print('Mac version: %s, %s, %s' % platform.mac_ver())
 
 
 def get_path_to_root(appendLocation=None):

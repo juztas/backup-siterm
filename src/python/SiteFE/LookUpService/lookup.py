@@ -28,7 +28,6 @@ from past.utils import old_div
 from builtins import object
 import sys
 import os
-import time
 import tempfile
 import datetime
 import importlib
@@ -242,12 +241,6 @@ class LookUpService(object):
         dbObj = getVal(self.dbI, **{'sitename': self.sitename})
         workDir = self.config.get(self.sitename, 'privatedir') + "/LookUpService/"
         createDirs(workDir)
-        currentModel = dbObj.get('models', orderby=['insertdate', 'DESC'], limit=1)
-        self.newGraph = Graph()
-        #if currentModel:
-        #    try:
-        #        self.newGraph.parse(currentModel[0]['fileloc'], format='turtle')
-        #    except IOError:
         self.newGraph = Graph()
         jOut = getAllHosts(self.sitename, self.logger)
         # Get switch information...

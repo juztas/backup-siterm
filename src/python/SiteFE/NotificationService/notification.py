@@ -20,8 +20,6 @@ Date			: 2017/09/26
 from __future__ import print_function
 from past.builtins import cmp
 from builtins import str
-import os
-import time
 import json
 from DTNRMLibs.Mailing import sendMail
 from DTNRMLibs.MainUtilities import evaldict
