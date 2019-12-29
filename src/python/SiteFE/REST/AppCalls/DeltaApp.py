@@ -21,7 +21,6 @@ Date			: 2017/09/26
 """
 from __future__ import print_function
 import re
-import time
 from DTNRMLibs.MainUtilities import getConfig
 from DTNRMLibs.MainUtilities import getStreamLogger
 from DTNRMLibs.MainUtilities import httpdate

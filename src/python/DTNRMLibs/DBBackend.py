@@ -136,10 +136,10 @@ class dbinterface(object):
             for item in search:
                 if first:
                     query = "WHERE "
-                    first = False
                 else:
                     query += "AND "
                 query += '%s = "%s" ' % (item[0], item[1])
+                first = False
         if orderby:
             query += "ORDER BY %s %s " % (orderby[0], orderby[1])
         if limit:
@@ -186,7 +186,8 @@ class dbinterface(object):
                 if first:
                     query = "WHERE "
                 else:
-                    query += "AND"
+                    query += "AND "
                 query += '%s = "%s" ' % (item[0], item[1])
+                first = False
         fullquery = "%s %s" % (self.getcall('delete', calltype), query)
         self.db.execute_del(fullquery, None)

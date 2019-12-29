@@ -43,13 +43,10 @@ import email.utils as eut
 import configparser
 from io import StringIO
 import logging
-from logging import StreamHandler
-from logging.handlers import TimedRotatingFileHandler
 # Custom exceptions imports
 import pycurl
 from DTNRMLibs.CustomExceptions import NotFoundError
 from DTNRMLibs.CustomExceptions import WrongInputError
-from DTNRMLibs.CustomExceptions import FailedToParseError
 from DTNRMLibs.CustomExceptions import NoSectionError
 from DTNRMLibs.CustomExceptions import NoOptionError
 from DTNRMLibs.CustomExceptions import TooManyArgumentalValues
@@ -92,7 +89,7 @@ def getStreamLogger(logLevel='DEBUG'):
               'INFO': logging.INFO,
               'DEBUG': logging.DEBUG}
     logger = logging.getLogger()
-    handler = StreamHandler()
+    handler = logging.StreamHandler()
     formatter = logging.Formatter("%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s",
                                   datefmt="%a, %d %b %Y %H:%M:%S")
     handler.setFormatter(formatter)
@@ -110,7 +107,7 @@ def getLogger(logFile='', logLevel='DEBUG', logOutName='api.log', rotateTime='mi
     logger = logging.getLogger()
     createDirs(logFile)
     logFile += logOutName
-    handler = TimedRotatingFileHandler(logFile, when=rotateTime, backupCount=backupCount)
+    handler = logging.TimedRotatingFileHandler(logFile, when=rotateTime, backupCount=backupCount)
     formatter = logging.Formatter("%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s",
                                   datefmt="%a, %d %b %Y %H:%M:%S")
     handler.setFormatter(formatter)
@@ -217,7 +214,6 @@ def getValueFromConfig(configPars, section, valName):
     except configparser.NoSectionError:
         msg = 'Configuration files does not have section %s defined' % section
         raise NoSectionError(msg)
-    return None
 
 
 def getFileContentAsJson(inputFile):

@@ -45,22 +45,18 @@ import importlib
 from SiteFE.REST.FEApis import FrontendRM
 import SiteFE.REST.AppCalls as AllCalls
 from DTNRMLibs.x509 import CertHandler
-from DTNRMLibs.RESTInteractions import getContent
 from DTNRMLibs.RESTInteractions import get_match_regex
 from DTNRMLibs.MainUtilities import getConfig
 from DTNRMLibs.MainUtilities import getHeaders
 from DTNRMLibs.MainUtilities import getUrlParams
 from DTNRMLibs.MainUtilities import read_input_data
 from DTNRMLibs.MainUtilities import getCustomOutMsg
-from DTNRMLibs.CustomExceptions import NotFoundError
 from DTNRMLibs.CustomExceptions import HTTPResponses
-from DTNRMLibs.CustomExceptions import WrongInputError
 from DTNRMLibs.CustomExceptions import BadRequestError
 from DTNRMLibs.CustomExceptions import NotSupportedArgument
 from DTNRMLibs.CustomExceptions import TooManyArgumentalValues
 from DTNRMLibs.CustomExceptions import DeltaNotFound
 from DTNRMLibs.CustomExceptions import ModelNotFound
-from DTNRMLibs.CustomExceptions import WrongDeltaStatusTransition
 
 # Initialization is done only 1 time
 _INITIALIZED = None
@@ -166,6 +162,7 @@ def application(environ, start_response):
         environ['CERTINFO'] = certHandler.getCertInfo(environ)
         print(environ['CERTINFO'])
         permissions = certHandler.validateCertificate(environ)
+        print(permissions)
     except Exception as ex:
         _HTTP_RESPOND.ret_401('application/json', start_response, None)
         return [json.dumps(getCustomOutMsg(errMsg=ex.__str__(), errCode=401))]

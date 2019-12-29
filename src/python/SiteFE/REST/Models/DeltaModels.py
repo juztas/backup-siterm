@@ -21,7 +21,6 @@ Date			: 2017/09/26
 """
 from __future__ import print_function
 from builtins import object
-from time import time
 from tempfile import NamedTemporaryFile
 from SiteFE.PolicyService import policyService as polS
 from SiteFE.PolicyService import stateMachine as stateM
