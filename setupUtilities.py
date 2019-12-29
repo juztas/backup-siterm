@@ -18,10 +18,14 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import os
 import sys
 import platform
-import ConfigParser
+import configparser
 
 import platform
 import sys
@@ -35,17 +39,17 @@ def linuxDistr():
 
 def printInfo(logger=None):
     """ Print information about sytem before start setup """
-    print "System Information:"
-    print "-" * 100
-    print "Python version: %s" % sys.version.split('\n')
-    print "Dist: %s" % str(platform.dist())
-    print "Linux Distribution: %s" % linuxDistr()
-    print "System: %s" % platform.system()
-    print "Machine: %s" % platform.machine()
-    print "Platform: %s" % platform.platform()
-    print 'Uname: %s' % platform.uname()
-    print 'Version: %s' % platform.version()
-    print 'Mac version: %s' % platform.mac_ver()
+    print("System Information:")
+    print("-" * 100)
+    print("Python version: %s" % sys.version.split('\n'))
+    print("Dist: %s" % str(platform.dist()))
+    print("Linux Distribution: %s" % linuxDistr())
+    print("System: %s" % platform.system())
+    print("Machine: %s" % platform.machine())
+    print("Platform: %s" % platform.platform())
+    print('Uname: %s' % platform.uname())
+    print('Version: %s' % platform.version())
+    print('Mac version: %s' % platform.mac_ver())
 
 
 def get_path_to_root(appendLocation=None):
@@ -124,12 +128,12 @@ def createDirs(fullDirPath):
         try:
             os.makedirs(fullDirPath)
         except OSError as ex:
-            print 'Received exception creating %s directory. Exception: %s' % (fullDirPath, ex)
+            print('Received exception creating %s directory. Exception: %s' % (fullDirPath, ex))
     return
 
 def getConfig(locations):
     """ Get parsed configuration """
-    tmpCp = ConfigParser.ConfigParser()
+    tmpCp = configparser.ConfigParser()
     for fileName in locations:
         if os.path.isfile(fileName):
             tmpCp.read(fileName)

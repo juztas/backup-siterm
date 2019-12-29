@@ -18,15 +18,19 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import os
 import glob
 import sys
 import pprint
-from QOS import QOS
+from .QOS import QOS
 from DTNRMLibs.MainUtilities import getDataFromSiteFE, evaldict, getStreamLogger
 from DTNRMLibs.MainUtilities import getDefaultConfigAgent, createDirs, getFullUrl, contentDB, getFileContentAsJson
 from DTNRMLibs.CustomExceptions import FailedInterfaceCommand
-from Components.VInterfaces import VInterfaces
+from .Components.VInterfaces import VInterfaces
 
 COMPONENT = 'Ruler'
 
@@ -78,7 +82,7 @@ class Ruler(object):
 
     def vlanCheck(self, addition):
         """ vlan parameters check and append """
-        if 'MTU' not in addition['hosts'][self.hostname].keys():
+        if 'MTU' not in list(addition['hosts'][self.hostname].keys()):
             addition['hosts'][self.hostname]['MTU'] = 9000
         if 'txqueuelen' not in addition['hosts'][self.hostname]:
             addition['hosts'][self.hostname]['txqueuelen'] = 10000
@@ -114,7 +118,7 @@ class Ruler(object):
                 self.vInterface.remove(addition['hosts'][self.hostname])
             os.unlink(newvlanFile)
             # return True, "This delta was already on the system. Cancel it."
-        if self.hostname not in addition['hosts'].keys():
+        if self.hostname not in list(addition['hosts'].keys()):
             return False, "Failed to find own hostname in dictionary"
         addition = self.vlanCheck(addition)
         self.logger.info("Saving file %s", deltaID)
@@ -170,7 +174,7 @@ class Ruler(object):
         # THIS IS TODO
         for fileName in glob.glob("%s/*.json" % self.workDir):
             inputDict = getFileContentAsJson(fileName)
-            if 'uid' not in inputDict.keys():
+            if 'uid' not in list(inputDict.keys()):
                 self.logger.info('Seems this dictionary is custom delta. Ignoring it.')
                 continue
             deltaInfo = self.getDeltaInfo(inputDict['uid'])
@@ -234,7 +238,7 @@ class Ruler(object):
                     self.setHostState('active', state['deltaid'])
                 else:
                     # TODO. Have ability to save message in Frontend.
-                    print 'we should change state to failed', outExit, message
+                    print('we should change state to failed', outExit, message)
                     self.logger.info('Adding resources failed. Setting Host State to Failed Exit: %s, Message %s'
                                      % (outExit, message))
                     self.setHostState('failed', state['deltaid'])
@@ -251,6 +255,6 @@ def execute(config=None, logger=None):
     ruler.start()
 
 if __name__ == '__main__':
-    print 'WARNING: ONLY FOR DEVELOPMENT!!!!. Number of arguments:', len(sys.argv), 'arguments.'
-    print 'Argument List:', str(sys.argv)
+    print('WARNING: ONLY FOR DEVELOPMENT!!!!. Number of arguments:', len(sys.argv), 'arguments.')
+    print('Argument List:', str(sys.argv))
     execute(logger=getStreamLogger())

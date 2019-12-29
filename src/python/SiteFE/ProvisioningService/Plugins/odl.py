@@ -21,6 +21,7 @@ Email 			: justas.balcas (at) cern.ch
 Date			: 2017/09/26
 """
 
+from builtins import object
 class mainCaller(object):
     def __init__(self):
         self.name = 'ODL'

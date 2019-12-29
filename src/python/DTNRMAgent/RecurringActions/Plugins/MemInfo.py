@@ -18,6 +18,9 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from __future__ import division
+from past.utils import old_div
 import pprint
 from DTNRMAgent.RecurringActions.Utilities import externalCommand, tryConvertToNumeric
 from DTNRMLibs.MainUtilities import getConfig
@@ -41,8 +44,8 @@ def get(config):
                     name += "_%s" % value[1]
                 memInfo[name] = tryConvertToNumeric(value[0])
             else:
-                print 'MemInfo: Skipped this item: ', vals
-    memInfo['memory_mb'] = int(memInfo['MemTotal_kB'] / 1000)
+                print('MemInfo: Skipped this item: ', vals)
+    memInfo['memory_mb'] = int(old_div(memInfo['MemTotal_kB'], 1000))
     return memInfo
 
 if __name__ == "__main__":

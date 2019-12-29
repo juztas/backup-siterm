@@ -19,7 +19,10 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
 # TODO. Configure also MTU and txqueuelen
+from builtins import str
+from builtins import object
 import ipaddress
 from DTNRMLibs.MainUtilities import execute
 
@@ -27,13 +30,13 @@ from DTNRMLibs.MainUtilities import execute
 def getBroadCast(inIP, logger):
     """ Return broadcast IP """
     logger.info('Getting boardcast IP info')
-    my_net = ipaddress.ip_network(unicode(inIP), strict=False)
+    my_net = ipaddress.ip_network(str(inIP), strict=False)
     logger.info('Broadcast for %s is set to %s' % (inIP, str(my_net.broadcast_address)))
     return str(my_net.broadcast_address)
 
 
 def identifyL23(addition):
-    return 'L3' if 'routes' in addition.keys() else 'L2'
+    return 'L3' if 'routes' in list(addition.keys()) else 'L2'
 
 
 class VInterfaces(object):
@@ -56,7 +59,7 @@ class VInterfaces(object):
     def setup(self, vlan, raiseError=False):
         """ Setup vlan """
         if identifyL23(vlan) == 'L2':
-            if 'ip' in vlan.keys():
+            if 'ip' in list(vlan.keys()):
                 self.logger.info('Called VInterface setup L2 for %s' % str(vlan))
                 command = "ip addr add %s broadcast %s dev %s.%s" % (vlan['ip'], getBroadCast(vlan['ip'], self.logger),
                                                                      vlan['destport'], vlan['vlan'])
@@ -75,8 +78,8 @@ class VInterfaces(object):
         else:
             self.logger.info('Called VInterface start L3 for %s' % str(vlan))
             for routel in vlan['routes']:
-                if 'routeTo' in routel.keys() and 'nextHop' in routel.keys():
-                    if 'value' in routel['routeTo'].keys() and 'value' in routel['nextHop'].keys():
+                if 'routeTo' in list(routel.keys()) and 'nextHop' in list(routel.keys()):
+                    if 'value' in list(routel['routeTo'].keys()) and 'value' in list(routel['nextHop'].keys()):
                         command = "ip route add %s via %s" % (routel['routeTo']['value'],
                                                               routel['nextHop']['value'].split('/')[0])
                         execute(command, self.logger, raiseError)
@@ -102,8 +105,8 @@ class VInterfaces(object):
         else:
             self.logger.info('Called VInterface remove L3 for %s' % str(vlan))
             for routel in vlan['routes']:
-                if 'routeTo' in routel.keys() and 'nextHop' in routel.keys():
-                    if 'value' in routel['routeTo'].keys() and 'value' in routel['nextHop'].keys():
+                if 'routeTo' in list(routel.keys()) and 'nextHop' in list(routel.keys()):
+                    if 'value' in list(routel['routeTo'].keys()) and 'value' in list(routel['nextHop'].keys()):
                         command = "ip route del %s via %s" % (routel['routeTo']['value'],
                                                               routel['nextHop']['value'].split('/')[0])
                         execute(command, self.logger, raiseError)
@@ -121,8 +124,8 @@ class VInterfaces(object):
         else:
             self.logger.info('Called VInterface status L3 for %s' % str(vlan))
             for routel in vlan['routes']:
-                if 'routeTo' in routel.keys() and 'nextHop' in routel.keys():
-                    if 'value' in routel['routeTo'].keys() and 'value' in routel['nextHop'].keys():
+                if 'routeTo' in list(routel.keys()) and 'nextHop' in list(routel.keys()):
+                    if 'value' in list(routel['routeTo'].keys()) and 'value' in list(routel['nextHop'].keys()):
                         command = "ip route get %s" % (routel['routeTo']['value'])
                         execute(command, self.logger, raiseError)
                 else:
@@ -131,4 +134,4 @@ class VInterfaces(object):
         return None
 
 if __name__ == '__main__':
-    print 'This has to be called through main Ruler component. Not supported direct call'
+    print('This has to be called through main Ruler component. Not supported direct call')

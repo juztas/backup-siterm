@@ -19,20 +19,21 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
 from DTNRMLibs.MainUtilities import getConfig, getLogger, getStreamLogger
 from DTNRMLibs.MainUtilities import evaldict
 
 def getNodeDictVlans(nodesInfo, hostname, switchName):
     if not nodesInfo:
         return None, {}
-    for nodeIP, nodeDict in nodesInfo['nodes'].items():
+    for nodeIP, nodeDict in list(nodesInfo['nodes'].items()):
         if nodeDict['hostname'] == hostname:
-            for intf, intfDict in nodeDict['NetInfo'].items():
-                print intfDict
+            for intf, intfDict in list(nodeDict['NetInfo'].items()):
+                print(intfDict)
                 if not isinstance(intfDict, dict):
-                    print 'Something is failing on agent. It did not sent dict!'
+                    print('Something is failing on agent. It did not sent dict!')
                     return None, {}
-                if 'switch' in intfDict.keys() and intfDict['switch'] == switchName:
+                if 'switch' in list(intfDict.keys()) and intfDict['switch'] == switchName:
                     return intf, intfDict
     return None, {}
 
@@ -66,18 +67,18 @@ def getinfo(config, logger, nodesInfo=None, site=None):
             else:
                 output['vlans'][switch][port][key] = config.get(site, "port%s%s" % (port, key))
         output['switches'][switch][port] = config.get(site, 'port%shostname' % port)
-    for nodename, nodeDict in nodesInfo.items():
+    for nodename, nodeDict in list(nodesInfo.items()):
         hostinfo = evaldict(nodeDict['hostinfo'])
-        for intfKey, intfDict in hostinfo['NetInfo']["interfaces"].items():
-            print intfKey, intfDict
+        for intfKey, intfDict in list(hostinfo['NetInfo']["interfaces"].items()):
+            print(intfKey, intfDict)
             breakLoop = False
             for key in ['switch_port', 'switch', 'vlan_range', 'available_bandwidth']:
-                if key not in intfDict.keys():
+                if key not in list(intfDict.keys()):
                     breakLoop = True
             if breakLoop:
                 continue
-            if intfDict['switch'] in output['switches'].keys():
-                if intfDict['switch_port'] in output['switches'][intfDict['switch']].keys():
+            if intfDict['switch'] in list(output['switches'].keys()):
+                if intfDict['switch_port'] in list(output['switches'][intfDict['switch']].keys()):
                     logger.info('Datanode is misconfigured. It defines same interface. Will not add to ')
                     continue
                 output['switches'][intfDict['switch']][intfDict['switch_port']] = nodeDict['hostname']
@@ -90,14 +91,14 @@ def getinfo(config, logger, nodesInfo=None, site=None):
     if config.has_option(site, "l3_routing_map"):
         routingMap = config.get(site, "l3_routing_map")
         output['l3_routing'] = evaldict(routingMap)
-    print output
+    print(output)
     return output
 
 if __name__ == '__main__':
-    print 'WARNING!!!! This should not be used through main call. Only for testing purposes!!!'
+    print('WARNING!!!! This should not be used through main call. Only for testing purposes!!!')
     CONFIG = getConfig(["/etc/dtnrm-site-fe.conf"])
     COMPONENT = 'LookUpService'
     LOGGER = getStreamLogger()
     for sitename in CONFIG.get('general', 'sites').split(','):
-        print 'Working on %s' % sitename
+        print('Working on %s' % sitename)
         getinfo(CONFIG, LOGGER, site=sitename)

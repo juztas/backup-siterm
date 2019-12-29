@@ -17,6 +17,9 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from past.builtins import cmp
+from builtins import str
 import os
 import time
 import json
@@ -38,7 +41,7 @@ LOGGER = getLogger("%s/%s/" % (CONFIG.get('general', 'logDir'), COMPONENT), CONF
 
 def checkPluginErrors(ipv4, values, errors):
     """ Check for default errors which can be set by plugin """
-    for pluginName, pluginOut in values.items():
+    for pluginName, pluginOut in list(values.items()):
         tmpError = {}
         if not isinstance(pluginOut, dict):
             continue
@@ -78,7 +81,7 @@ def compareErrors(prevErrors, currErrors):
             if cmp(error, prevError) == 0:
                 foundMatch = True
         if not foundMatch:
-            print 'This error is new %s' % error
+            print('This error is new %s' % error)
             newErrors.append(error)
     return newErrors
 
@@ -98,7 +101,7 @@ def prepareMailSend(errors, mailingSender, mailingList):
     for error in errors:
         bodyText += '-' * 50
         bodyText += '\n'
-        for key, value in error.items():
+        for key, value in list(error.items()):
             bodyText += '%s  :  %s\n' % (key, value)
         bodyText += '\n\n'
     sendMail(mailingSender, mailingList,
@@ -112,7 +115,7 @@ def startwork(config=None, logger=None):
     errors = []
     agents = getDataFromSiteFE({}, "http://localhost/", "/sitefe/json/frontend/getdata")
     if agents[2] != 'OK':
-        print 'Received a failure getting information from Site Frontend %s' % str(agents)
+        print('Received a failure getting information from Site Frontend %s' % str(agents))
         return
     workDir = CONFIG.get('frontend', 'privatedir') + "/notificationService/"
     mailingSender = CONFIG.get('NotificationService', 'mailingSender')
@@ -122,10 +125,10 @@ def startwork(config=None, logger=None):
     try:
         jOut = evaldict(agents[0])
     except FailedToParseError as ex:
-        print 'Server returned not a json loadable object. Raising error. Output %s. Errors: %s' % (str(agents), ex)
+        print('Server returned not a json loadable object. Raising error. Output %s. Errors: %s' % (str(agents), ex))
         return
     # We start with simple error messages
-    for ipaddr, values in jOut.items():
+    for ipaddr, values in list(jOut.items()):
         # Check if there is any error first
         checkPluginErrors(ipaddr, values, errors)
         checkCertLifeTime(ipaddr, values, errors)
@@ -136,19 +139,19 @@ def startwork(config=None, logger=None):
         try:
             lastErrors = evaldict(lastErrors[0])
         except FailedToParseError as ex:
-            print 'Loaded object from the system is not evaluable. Raising error. \
-                   Output %s. Errors: %s' % (str(lastErrors), ex)
-            print 'Ignoring and continue as there was no errors before'
+            print('Loaded object from the system is not evaluable. Raising error. \
+                   Output %s. Errors: %s' % (str(lastErrors), ex))
+            print('Ignoring and continue as there was no errors before')
             lastErrors = []
     newErrors = []
     if lastErrors and errors:
         newErrors = compareErrors(lastErrors, errors)
     elif errors:
         # Means there is no previous errors.
-        print errors
+        print(errors)
     elif lastErrors and not errors:
-        print 'All errors were resolved...'
-    print lastErrors, errors, newErrors
+        print('All errors were resolved...')
+    print(lastErrors, errors, newErrors)
     if newErrors:
         prepareMailSend(newErrors, mailingSender, mailingList)
     writeNewFile(errors, workDir)

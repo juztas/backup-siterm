@@ -19,7 +19,10 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2019 California Institute of Technology
 Date			: 2019/05/01
 """
+from __future__ import print_function
 
+from builtins import zip
+from builtins import object
 import os
 import sqlite3
 import DTNRMLibs.dbcalls as dbcalls
@@ -47,7 +50,7 @@ class DBBackend(object):
         """ Create database """
         for argname in dir(dbcalls):
             if argname.startswith('create_'):
-                print 'Call to create %s' % argname
+                print('Call to create %s' % argname)
                 self.cursor.execute(getattr(dbcalls, argname))
         self.conn.commit()
         self.destroy()
@@ -82,11 +85,11 @@ class DBBackend(object):
                 self.cursor.execute(query, item)
             self.conn.commit()
         except sqlite3.IntegrityError as ex:
-            print 'Record Already Exists. Ex: %s' % ex
+            print('Record Already Exists. Ex: %s' % ex)
             self.conn.rollback()
             raise ex
         except Exception as ex:
-            print 'Got Exception %s ' % ex
+            print('Got Exception %s ' % ex)
             self.conn.rollback()
             raise ex
         finally:
@@ -100,7 +103,7 @@ class DBBackend(object):
             self.cursor.execute(query)
             self.conn.commit()
         except Exception as ex:
-            print 'Got Exception %s ' % ex
+            print('Got Exception %s ' % ex)
             self.conn.rollback()
             raise ex
         finally:
@@ -118,7 +121,7 @@ class dbinterface(object):
         try:
             callquery = getattr(dbcalls, '%s_%s' % (callaction, calltype))
         except AttributeError as ex:
-            print 'Called %s_%s, but got exception %s' % (callaction, calltype, ex)
+            print('Called %s_%s, but got exception %s' % (callaction, calltype, ex))
             raise ex
         return callquery
 
@@ -150,7 +153,7 @@ class dbinterface(object):
         out = []
         if mapping:
             for item in dbout[1]:
-                out.append(dict(zip(dbout[0], list(item))))
+                out.append(dict(list(zip(dbout[0], list(item)))))
             return out
         return dbout
 

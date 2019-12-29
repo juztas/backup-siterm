@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import str
 import sys
 import os
 import time
@@ -16,11 +18,11 @@ def getCertInfo(certLocation):
     out['issuer'] = "".join("/{0:s}={1:s}".format(name.decode(), value.decode()) for name, value in cert.get_issuer().get_components())
     out['fullDN'] = "%s%s" % (out['issuer'], out['subject'])
     print('Cert Info: %s' % out)
-    print('Certificate Subject:     ', out['subject'])
-    print('Certificate Valid From:  ', out['notAfter'])
-    print('Certificate Valid Until: ', out['notBefore'])
-    print('Certificate Issuer:      ', out['issuer'])
-    print('Certificate Full DN:     ', out['fullDN'])
+    print(('Certificate Subject:     ', out['subject']))
+    print(('Certificate Valid From:  ', out['notAfter']))
+    print(('Certificate Valid Until: ', out['notBefore']))
+    print(('Certificate Issuer:      ', out['issuer']))
+    print(('Certificate Full DN:     ', out['fullDN']))
     print('-'*80)
     print('INFO: Please ensure that Certificate full DN is entered to /etc/dtnrm-auth.conf file.')
     print('-'*80)

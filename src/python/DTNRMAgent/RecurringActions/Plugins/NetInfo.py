@@ -18,6 +18,8 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from builtins import str
 import ipaddress
 import pprint
 import psutil
@@ -61,12 +63,12 @@ def get(config):
         # TODO. It should also calculate reservable capacity depending on installed vlans;
         # Currently we set it to max available;
         nicInfo['reservable_bandwidth'] = int(vlan_max)  # TODO
-    print netInfo
+    print(netInfo)
     tmpifAddr = psutil.net_if_addrs()
     tmpifStats = psutil.net_if_stats()
     tmpIOCount = psutil.net_io_counters(pernic=True)
     foundInterfaces = []
-    for nic, addrs in tmpifAddr.items():
+    for nic, addrs in list(tmpifAddr.items()):
         # TODO: Check with configuration of which vlans are provisioned;
         # Currently it is a hack. if it is a vlan, I assume it is provisioned by orchestrator;
         nicSplit = nic.split('.')
@@ -93,9 +95,9 @@ def get(config):
                     elif isinstance(ipwithnetmask, ipaddress.IPv6Interface):
                         familyInfo["ipv6-address"] = str(ipwithnetmask)
                     else:
-                        print "This type was not understood by the system. Type: %s and value: %s" % (type(ipwithnetmask), str(ipwithnetmask))
+                        print("This type was not understood by the system. Type: %s and value: %s" % (type(ipwithnetmask), str(ipwithnetmask)))
                 except ValueError as ex:
-                    print 'Got an exception %s' % ex
+                    print('Got an exception %s' % ex)
             elif int(vals.family) in [17]:
                 familyInfo["mac-address"] = vals.address
             familyInfo["broadcast"] = vals.broadcast
@@ -125,10 +127,10 @@ def get(config):
                 familyInfo["txqueuelen"] = txQueueLen[0].strip()
     # Check in the end which interfaces where defined in config but not available...
     outputForFE = {"interfaces": {}, "routes": []}
-    for intfName, intfDict in netInfo.iteritems():
+    for intfName, intfDict in netInfo.items():
         if intfName.split('.')[0] not in foundInterfaces:
-            print 'This interface was defined in configuration, but not available. Will not add it to final output'
-            print intfName, intfDict
+            print('This interface was defined in configuration, but not available. Will not add it to final output')
+            print(intfName, intfDict)
         else:
             outputForFE["interfaces"][intfName] = intfDict
     # Get Routing Information
@@ -145,7 +147,7 @@ def getRoutes(config):
                 if item[0] in ['RTA_GATEWAY', 'RTA_DST', 'RTA_PREFSRC']:
                     newroute[item[0]] = item[1]
             routes.append(newroute)
-    print routes
+    print(routes)
     return routes
 
 def getVlanCount(config):
@@ -153,7 +155,7 @@ def getVlanCount(config):
     # Count all vlans as if there are multiple interfaces it can have different on each
     out = get(config)
     vlanCount = 0
-    for intfName, intfDict in out.iteritems():
+    for intfName, intfDict in out.items():
         if not isinstance(intfDict, dict):
             continue
         if not intfDict['provisioned']:

@@ -18,6 +18,7 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from builtins import range
 import re
 import pprint
 from DTNRMAgent.RecurringActions.Utilities import externalCommand, tryConvertToNumeric
@@ -47,7 +48,7 @@ def parseOut(tmpOut, storageInfo):
                     localOut["Values"].append(newList)
     for oneLine in localOut["Values"]:
         for countNum in range(len(oneLine)):
-            if oneLine[0] not in storageInfo["Values"].keys():
+            if oneLine[0] not in list(storageInfo["Values"].keys()):
                 storageInfo["Values"][oneLine[0]] = {}
             key = localOut["Keys"][countNum].replace("%", "Percentage")
             # Append size and also change to underscore
@@ -73,7 +74,7 @@ def get(config):
     outStorage = {"FileSystems": {}, "total_gb": 0, "app": "FileSystem"}
 
     totalSum = 0
-    for mountName, mountVals in storageInfo["Values"].iteritems():
+    for mountName, mountVals in storageInfo["Values"].items():
         outStorage["FileSystems"][mountName] = mountVals['Avail_gb']
         totalSum += int(mountVals['Avail_gb'])
     outStorage["total_gb"] = totalSum

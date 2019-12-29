@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import sys
 from DTNRMLibs.MainUtilities import getVal
 from SiteFE.PolicyService.stateMachine import StateMachine
@@ -16,12 +17,12 @@ def deleteAll(sitename, deltaUID=None):
         if deltaUID:
             if delta['uid'] != deltaUID:
                 continue
-        print 'Cancel %s' % delta['uid']
+        print('Cancel %s' % delta['uid'])
         stateMachine._stateChangerDelta(dbobj, 'remove', **delta)
 
 if __name__ == "__main__":
-    print len(sys.argv)
-    print sys.argv
+    print(len(sys.argv))
+    print(sys.argv)
     if len(sys.argv) > 2:
         deleteAll(sys.argv[1], sys.argv[2])
     else:

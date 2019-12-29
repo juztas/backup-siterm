@@ -19,9 +19,12 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 import json
 import tempfile
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import requests
 import potsdb
 from DTNRMLibs.MainUtilities import getDefaultConfigAgent
@@ -31,7 +34,7 @@ COMPONENT = "MonAgent"
 
 def makeGETRequest(url, headers=None):
     """ Make get Request with headers and url params using request """
-    print 'Making GET Request to: %s' % url
+    print('Making GET Request to: %s' % url)
     req = requests.request('GET', url, headers=headers)
     try:
         return req.status_code, json.loads(req.content), req.headers
@@ -52,15 +55,15 @@ def getNetdataConfig():
             tmpConf = makeGETRequest("http://localhost:19999/netdata.conf")
             for line in tmpConf[1].splitlines():
                 fd.write(line.replace('\t', '') + "\n")
-        except urllib2.URLError as ex:
-            print 'Received URLError %s. Checking if config file is present locally' % ex
+        except urllib.error.URLError as ex:
+            print('Received URLError %s. Checking if config file is present locally' % ex)
             return False, {}
     tempfileName = fd.name
     hostConfig = getConfig([tempfileName])
     for option in ['enabled', 'destination']:
         if not hostConfig.has_option('backend', option):
-            print 'Netdata server is not configured to publish anything to any backend'
-            print '* Skipping this node check.'
+            print('Netdata server is not configured to publish anything to any backend')
+            print('* Skipping this node check.')
             return False, {}
     for optionKey in hostConfig.options('backend'):
         outDict[optionKey] = hostConfig.get('backend', optionKey)
@@ -113,13 +116,13 @@ def execute(configIn=None, loggerIn=None):
            'sense.vlansFree': 0, 'sense.vlansTotal': 0, 'sense.agentError': 0, 'sense.agentWarning': 0,
            'sense.agent.recurringactions.status': 0, 'sense.agent.recurringactions.runtime': 0,
            'sense.agent.ruler.status': 0, 'sense.agent.ruler.runtime': 0}
-    for _dKey, dVals in agents[1]['alarms'].items():
+    for _dKey, dVals in list(agents[1]['alarms'].items()):
         if dVals['status'] == 'WARNING':
             out['netdata.warnings'] += 1
         elif dVals['status'] == 'CRITICAL':
             out['netdata.critical'] += 1
     agentOut = agentDB.getFileContentAsJson(workDir + "/latest-out.json")
-    for _interf, interfDict in agentOut['NetInfo'].items():
+    for _interf, interfDict in list(agentOut['NetInfo'].items()):
         if 'vlan_range' in interfDict:
             lowR, highR = interfDict['vlan_range'].split(',')
             out['sense.agentError'] += 1 if int(int(highR) - int(lowR)) < 0 else 0
@@ -135,13 +138,13 @@ def execute(configIn=None, loggerIn=None):
             destHostname = outConfig['destination'].split(':')[0]
             destPort = outConfig['destination'].split(':')[1]
         else:
-            print 'FAILURE. Was expecting protocol:ip:port or ip:port... Got Value: %s' % outConfig['destination']
+            print('FAILURE. Was expecting protocol:ip:port or ip:port... Got Value: %s' % outConfig['destination'])
             return
     else:
-        print 'FAILURE. Backend is not configured'
+        print('FAILURE. Backend is not configured')
         return
     metrics = potsdb.Client(destHostname, port=destPort, qsize=1000, host_tag=True, mps=100, check_host=True)
-    for key, value in out.items():
+    for key, value in list(out.items()):
         metrics.send("monit.%s" % key, value, **outConfig['tags'])
     # waits for all outstanding metrics to be sent and background thread closes
     metrics.wait()

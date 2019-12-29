@@ -18,6 +18,9 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from builtins import str
+from builtins import object
 import importlib
 import time
 from DTNRMLibs.MainUtilities import evaldict
@@ -68,7 +71,7 @@ class ProvisioningService(object):
         for stateChange in [{"accepting": "accepted"}, {"accepted": "committing"},
                             {"committing": "committed"}, {"committed": "activating"},
                             {"activating": "active"}, {"active": "remove"}, {"cancel": "remove"}]:
-            if deltaState == stateChange.keys()[0]:
+            if deltaState == list(stateChange.keys())[0]:
                 msg = 'Delta State %s and performing action to %s' % (deltaState, stateChange[deltaState])
                 self.logger.debug(msg)
                 switchruler.mainCall(deltaState, newvlan, 'remove')
@@ -79,12 +82,12 @@ class ProvisioningService(object):
     # TODO merge these two functions
     def deltaCommit(self, newDelta, deltaID, newvlan, switchName, switchruler, fullURL):
         """ Here goes all communication with component and also rest interface """
-        print 'Here goes all communication with component and also rest interface'
+        print('Here goes all communication with component and also rest interface')
         deltaState = newDelta['HOSTSTATE']
         for stateChange in [{"accepting": "accepted"}, {"accepted": "committing"},
                             {"committing": "committed"}, {"committed": "activating"}, {"activating": "active"}]:
-            if deltaState == stateChange.keys()[0]:
-                print 'Delta State %s and performing action to %s' % (deltaState, stateChange[deltaState])
+            if deltaState == list(stateChange.keys())[0]:
+                print('Delta State %s and performing action to %s' % (deltaState, stateChange[deltaState]))
                 switchruler.mainCall(deltaState, newvlan, 'add')
                 self.pushInternalAction(fullURL, stateChange[deltaState], deltaID, switchName)
                 deltaState = stateChange[deltaState]
@@ -102,7 +105,7 @@ class ProvisioningService(object):
     def checkdeltas(self, switchHostname, inJson):
         """Check which ones are assigned to any of switch"""
         newDeltas = []
-        if switchHostname in inJson['HostnameIDs'].keys():
+        if switchHostname in list(inJson['HostnameIDs'].keys()):
             for delta in inJson['HostnameIDs'][switchHostname]:
                 # print delta, self.hostname, inJson['ID'][delta]['State']
                 # 1) Filter out all which are not relevant.
@@ -132,8 +135,8 @@ class ProvisioningService(object):
         out = []
         if not switches:
             return out
-        for _switchName, switchPort in switches['vlans'].items():
-            for _portName, portDict in switchPort.items():
+        for _switchName, switchPort in list(switches['vlans'].items()):
+            for _portName, portDict in list(switchPort.items()):
                 if 'isAlias' in portDict:
                     tmp = portDict['isAlias'].split(':')[-3:]
                     out.append(tmp[0])
@@ -166,8 +169,8 @@ class ProvisioningService(object):
         alliases = self.getAllAliases(switches)
         outputDict = {}
         allDeltas = self.getData(fullURL, "/sitefe/v1/deltas?oldview=true")
-        for switchName in list(switches['switches'].keys() + alliases):
-            print switchName
+        for switchName in list(list(switches['switches'].keys()) + alliases):
+            print(switchName)
             newDeltas = self.checkdeltas(switchName, allDeltas)
             for newDelta in newDeltas:
                 outputDict.setdefault(newDelta['ID'])
@@ -183,7 +186,7 @@ class ProvisioningService(object):
                             else:
                                 self.deltaCommit(newDelta, newDelta['ID'], newvlan, switchName, switchruler, fullURL)
                     except IOError as ex:
-                        print ex
+                        print(ex)
                         raise Exception('Received IOError')
 
 

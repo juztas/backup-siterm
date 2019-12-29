@@ -18,6 +18,8 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from builtins import str
 import os.path
 import pprint
 from DTNRMAgent.RecurringActions.Utilities import externalCommand, tryConvertToNumeric, runPipedCmd, getProcInfo
@@ -55,7 +57,7 @@ def get(config):
                     name += "_%s" % value[1]
                 info['configuration'][name] = tryConvertToNumeric(value[0])
             else:
-                print 'GridFTP: Skipped this item: ', vals
+                print('GridFTP: Skipped this item: ', vals)
     info = getCurrentRunningStats(info)
     return info
 
@@ -70,7 +72,7 @@ def getCurrentRunningStats(info):
         for desc in item.split('\n'):
             if 'grep globus-gridftp-server' in desc:
                 continue
-            print desc
+            print(desc)
             if not desc:
                 continue
             vals = [val for val in desc.split() if val]
@@ -78,9 +80,9 @@ def getCurrentRunningStats(info):
                 info[vals[1]] = getProcInfo(vals[1])
                 continue
             totalTransferCount += 1
-            if 'UserStats' not in info.keys():
+            if 'UserStats' not in list(info.keys()):
                 info['UserStats'] = {}
-            if str(vals[0]) not in info['UserStats'].keys():
+            if str(vals[0]) not in list(info['UserStats'].keys()):
                 info['UserStats'][str(vals[0])] = 0
             info['UserStats'][str(vals[0])] += 1
             # Reuse same logic as in XrootD plugin. Make this process view exported.

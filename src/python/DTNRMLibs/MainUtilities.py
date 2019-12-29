@@ -18,6 +18,12 @@ Email 			: justas.balcas (at) cern.ch
 @Copyright		: Copyright (C) 2016 California Institute of Technology
 Date			: 2017/09/26
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import basestring
+from builtins import object
 import os
 import os.path
 import cgi
@@ -29,13 +35,13 @@ import shlex
 import uuid
 import json
 import copy
-import httplib
+import http.client
 import base64
 import datetime
 import subprocess
 import email.utils as eut
-import ConfigParser
-from cStringIO import StringIO
+import configparser
+from io import StringIO
 import logging
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
@@ -58,13 +64,13 @@ def getUTCnow():
 
 def getVal(conDict, **kwargs):
     """ Get value from configuration """
-    if 'sitename' in kwargs.keys():
-        if kwargs['sitename'] in conDict.keys():
+    if 'sitename' in list(kwargs.keys()):
+        if kwargs['sitename'] in list(conDict.keys()):
             return conDict[kwargs['sitename']]
         else:
             raise Exception('This SiteName is not configured on the Frontend. Contact Support')
     else:
-        print kwargs
+        print(kwargs)
         raise Exception('This Call Should not happen. Contact Support')
 
 
@@ -119,9 +125,9 @@ def evaldict(inputDict):
     try:
         out = ast.literal_eval(str(inputDict).encode('utf-8'))
     except ValueError as ex:
-        print "Failed to literal eval dict. Err:%s " % ex
+        print("Failed to literal eval dict. Err:%s " % ex)
     except SyntaxError as ex:
-        print "Failed to literal eval dict. Err:%s " % ex
+        print("Failed to literal eval dict. Err:%s " % ex)
     return out
 
 
@@ -165,7 +171,7 @@ def createDirs(fullDirPath):
         try:
             os.makedirs(fullDirPath)
         except OSError as ex:
-            print 'Received exception creating %s directory. Exception: %s' % (fullDirPath, ex)
+            print('Received exception creating %s directory. Exception: %s' % (fullDirPath, ex))
     return
 
 
@@ -174,7 +180,7 @@ def publishToSiteFE(inputDict, host, url):
     req = Requests(host, {})
     try:
         out = req.makeRequest(url, verb='PUT', data=json.dumps(inputDict))
-    except httplib.HTTPException as ex:
+    except http.client.HTTPException as ex:
         return (ex.message, ex.status, 'FAILED', True)
     except pycurl.error as ex:
         return (ex.args[1], ex.args[0], 'FAILED', False)
@@ -185,7 +191,7 @@ def getDataFromSiteFE(inputDict, host, url):
     req = Requests(host, {})
     try:
         out = req.makeRequest(url, verb='GET', data=inputDict)
-    except httplib.HTTPException as ex:
+    except http.client.HTTPException as ex:
         return (ex.message, ex.status, 'FAILED', True)
     except pycurl.error as ex:
         return (ex.args[1], ex.args[0], 'FAILED', False)
@@ -193,7 +199,7 @@ def getDataFromSiteFE(inputDict, host, url):
 
 def getConfig(locations):
     """ Get parsed configuration """
-    tmpCp = ConfigParser.ConfigParser()
+    tmpCp = configparser.ConfigParser()
     for fileName in locations:
         if os.path.isfile(fileName):
             tmpCp.read(fileName)
@@ -205,10 +211,10 @@ def getValueFromConfig(configPars, section, valName):
     """ Return value if available, else return None"""
     try:
         return configPars.get(section, valName)
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         msg = 'Configuration files does not have option %s in section %s defined' % (valName, section)
         raise NoOptionError(msg)
-    except ConfigParser.NoSectionError:
+    except configparser.NoSectionError:
         msg = 'Configuration files does not have section %s defined' % section
         raise NoSectionError(msg)
     return None
@@ -222,7 +228,7 @@ def getFileContentAsJson(inputFile):
             try:
                 out = json.load(fd)
             except ValueError:
-                print fd.seek(0)
+                print(fd.seek(0))
                 out = evaldict(fd.read())
     return out
 
@@ -281,14 +287,14 @@ def delete(inputObj, delObj):
         try:
             tmpList.remove(delObj)
         except ValueError as ex:
-            print 'Delete object %s is not in inputObj %s list. Err: %s' % (delObj, tmpList, ex)
+            print('Delete object %s is not in inputObj %s list. Err: %s' % (delObj, tmpList, ex))
         return tmpList
     elif isinstance(inputObj, dict):
         tmpDict = copy.deepcopy(inputObj)
         try:
             del tmpDict[delObj]
         except KeyError as ex:
-            print 'Delete object %s is not in inputObj %s dict. Err: %s' % (delObj, tmpList, ex)
+            print('Delete object %s is not in inputObj %s dict. Err: %s' % (delObj, tmpList, ex))
         return tmpDict
     # This should not happen
     raise WrongInputError('Provided input type is not available for deletion. Type %s' % type(inputObj))
@@ -305,7 +311,7 @@ def read_input_data(environ):
         outjson = json.loads(body.getvalue())
     except ValueError as ex:
         errMsg = 'Failed to parse json input: %s, Err: %s. Did caller used json.dumps?' % (body.getvalue(), ex)
-        print errMsg
+        print(errMsg)
         raise WrongInputError(errMsg)
     return outjson
 
@@ -341,7 +347,7 @@ def configOut(location, mandatoryOptions=None):
     # Check config file if all options are available
     if not mandatoryOptions:
         return config
-    for section, optionsList in mandatoryOptions.items():
+    for section, optionsList in list(mandatoryOptions.items()):
         if not config.has_section(section):
             msg = "Configuration file does not have %s section defined. Please refer to documentation" % section
             raise Exception(msg)
@@ -431,13 +437,13 @@ def getUrlParams(environ, paramsList):
                     raise NotSupportedArgument("Server does not support parameter %s=%s. Supported: %s" % (param['key'], outVals[0], param['options']))
         elif not outVals:
             outParams[param['key']] = param['default']
-    print outParams
+    print(outParams)
     return outParams
 
 def getHeaders(environ):
     """ Get all Headers and return them back as dictionary """
     headers = {}
-    for key in environ.keys():
+    for key in list(environ.keys()):
         if key.startswith('HTTP_'):
             headers[key[5:]] = environ.get(key)
     return headers
