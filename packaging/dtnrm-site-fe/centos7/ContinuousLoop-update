@@ -38,8 +38,7 @@ class MyDaemon(Daemon):
                 try:
                     LOGGER.info('Starting %s' % action[0])
                     action[1].startwork()
-                except:
-                    hadException = True
+                except IOError:
                     LOGGER.info('There was uncaught exception')
                     excType, excValue = sys.exc_info()[:2]
                     LOGGER.critical("Error details. ErrorType: %s, ErrMsg: %s" % (str(excType.__name__), excValue))
